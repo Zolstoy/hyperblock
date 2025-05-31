@@ -50,6 +50,7 @@ class session_base : public std::enable_shared_from_this<T>
    public:
     void on_accept(boost::beast::error_code ec)
     {
+        HYPERBLOCK_STEP(session::accept{});
         std::cout << "WebSocket connection accepted" << std::endl;
         do_read();
     }

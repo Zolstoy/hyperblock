@@ -17,6 +17,7 @@
 #include <thread>
 
 #include "../instance.hpp"
+#include "boost/asio/ssl/stream.hpp"
 #include "common.hpp"
 
 using namespace boost;
@@ -75,7 +76,7 @@ struct expected {
 TEST(Instance, Accept)
 {
     HYPERBLOCK_TESTS_PRELUDE({
-        if (event.index() != 0)
+        if (event.index() != hyper_block::step::events::server::accept::value)
             throw expected::bad_event_type{};
         throw expected::no_error{};
     });
@@ -87,15 +88,36 @@ TEST(Instance, Accept)
 TEST(Instance, Handshake)
 {
     HYPERBLOCK_TESTS_PRELUDE({
-        if (event.index() == 0)
+        if (event.index() == hyper_block::step::events::server::accept::value)
             return true;
-        if (event.index() != 1)
+        if (event.index() != hyper_block::step::events::session::handshake::value)
             throw expected::bad_event_type{};
         throw expected::no_error{};
     });
 
     asio::connect(socket.next_layer(), endpoints);
     socket.handshake(asio::ssl::stream_base::client);
+    ASSERT_THROW(step1.get(), expected::no_error);
+}
+
+TEST(Instance, Upgrade)
+{
+    HYPERBLOCK_TESTS_PRELUDE({
+        if (event.index() == hyper_block::step::events::server::accept::value)
+            return true;
+        if (event.index() == hyper_block::step::events::session::handshake::value)
+            return true;
+        if (event.index() != hyper_block::step::events::session::accept::value)
+            throw expected::bad_event_type{};
+        throw expected::no_error{};
+    });
+
+    asio::connect(socket.next_layer(), endpoints);
+    socket.handshake(asio::ssl::stream_base::client);
+    boost::beast::websocket::stream<asio::ssl::stream<asio::ip::tcp::socket>> ws(std::move(socket));
+
+    ws.accept();
+
     ASSERT_THROW(step1.get(), expected::no_error);
 }
 

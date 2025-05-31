@@ -51,9 +51,9 @@ jobs:
         id: ldflags
 
       - run: |
-            $LDFLAGS=./install/lib
+            $LDFLAGS=-L./install/lib
             ./install/bin/tests-details
 
       - run: |
-            $LDFLAGS=./install/lib
+            $LDFLAGS=-L./install/lib
             ./install/bin/tests-siege
