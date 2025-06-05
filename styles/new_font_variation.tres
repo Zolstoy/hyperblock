@@ -1,0 +1,7 @@
+[gd_resource type="FontVariation" load_steps=2 format=3 uid="uid://3w0objacl32b"]
+
+[ext_resource type="SystemFont" uid="uid://clrt21taqabwi" path="res://styles/font_main.tres" id="1_euijj"]
+
+[resource]
+base_font = ExtResource("1_euijj")
+variation_embolden = 1.29

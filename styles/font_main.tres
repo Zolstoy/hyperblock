@@ -1,0 +1,4 @@
+[gd_resource type="SystemFont" format=3 uid="uid://clrt21taqabwi"]
+
+[resource]
+font_names = PackedStringArray("Calibri")
